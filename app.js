@@ -5,17 +5,25 @@ const express = require('express');
 const exp = require('constants');
 
 const app = express();
-
+////////////////////
 // Middleware
 app.use(express.json());
 
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  console.log('Hello from the middleware👋');
+  next();
+});
+
+// /////////////////
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
-const getTours = (req, res) => {
+const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
+    time: req.requestTime,
     results: tours.length,
     data: {
       tours,
@@ -41,7 +49,7 @@ const getTour = (req, res) => {
   });
 };
 
-const addTour = (req, res) => {
+const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
   const newTour = Object.assign({ id: newId }, req.body);
 
@@ -61,14 +69,81 @@ const addTour = (req, res) => {
   );
 };
 
-// // Get request
-// app.get('/api/v1/tours', getTours);
-// Post request
-// app.post('/api/v1/tours', addTour);
-app.route('/api/v1/tours').get(getTours).post(addTour);
+const updateTour = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
 
+const deleteTour = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'not yet completed',
+  });
+};
+// // Get request
+// app.get('/api/v1/tours', getAllTours);
+// Post request
+// app.post('/api/v1/tours', createTour);
 // Get element by Id
-app.get('/api/v1/tours/:id', getTour);
+// app.get('/api/v1/tours/:id', getTour);
+
+/////////////////////////////////
+// ?MOUNTING
+// app.route('/api/v1/tours').get(getAllTours).post(createTour);
+// app
+//   .route('/api/v1/tours/:id')
+//   .get(getTour)
+//   .delete(deleteTour)
+//   .patch(updateTour);
+
+// app.route('/api/v1/users').get(getAllUsers).post(createUser);
+
+const routeTour = express.Router();
+const routeUser = express.Router();
+
+routeTour.route('/').get(getAllTours).post(createTour);
+routeTour.route('/:id').get(getTour).delete(deleteTour).patch(updateTour);
+
+routeUser.route('/').get(getAllUsers).post(createUser);
+routeTour.route('/:id').get(getUser).delete(deleteUser).patch(updateUser);
+
+app.use('/api/v1/users', routeUser);
+app.use('/api/v1/tours', routeTour);
+
+/////////////////////////////////
 
 const port = 3000;
 app.listen(port, () => {
