@@ -65,8 +65,7 @@ const addTour = (req, res) => {
 // app.get('/api/v1/tours', getTours);
 // Post request
 // app.post('/api/v1/tours', addTour);
-
-app.route('/api/v1/tours').get(getTour).post(addTour);
+app.route('/api/v1/tours').get(getTours).post(addTour);
 
 // Get element by Id
 app.get('/api/v1/tours/:id', getTour);
