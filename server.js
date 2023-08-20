@@ -16,8 +16,38 @@ mongoose
     useFindAndModify: false,
   })
   .then((conn) => {
-    console.log(conn.connection);
+    // console.log(conn.connection);
+    console.log('Connection Successfull');
   });
+
+const tourSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: [true, 'Err Str : tour must have name'],
+    unique: true,
+  },
+  price: {
+    type: Number,
+    required: [true, 'Err Str : tour must have price'],
+  },
+  rating: {
+    type: Number,
+    default: 4.5,
+  },
+});
+
+const Tour = mongoose.model('Tour', tourSchema);
+
+// const testTour = new Tour({
+//   name: 'The Snow Mountain',
+//   price: 230,
+//   rating: 4.5,
+// });
+
+// testTour
+//   .save()
+//   .then((doc) => console.log(doc))
+//   .catch((err) => console.log('Error 🔥', err));
 
 const port = 3000;
 app.listen(port, () => {
