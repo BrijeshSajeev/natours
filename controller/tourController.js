@@ -24,8 +24,44 @@ exports.createTour = async (req, res) => {
 };
 exports.getAllTours = async (req, res) => {
   try {
-    const tours = await Tour.find({});
+    // BUILD THE QUERY
+    // Filtering
+    const queryObj = { ...req.query };
+    const excludeEle = ['page', 'sort', 'fields', 'limit'];
+    // console.log(req.query);
+    excludeEle.forEach((el) => delete queryObj[el]);
+    // Advance Filtering
+    // { duration: { gte: '5' }, difficulty: 'easy' }
+    let queryString = JSON.stringify(queryObj);
+    queryString = queryString.replace(
+      /\b(gte|gt|lt|lte)\b/g,
+      (match) => `$${match}`,
+    );
 
+    let query = Tour.find(JSON.parse(queryString));
+
+    // SORTING
+    if (req.query.sort) {
+      const sortStr = req.query.sort.replace(',', ' ');
+      query = query.sort(sortStr);
+      // sort('price ratingAverage')
+    } else {
+      // Default
+      query = query.sort('createdAt');
+    }
+
+    // EXECUTE THE QUERY
+
+    const tours = await query;
+
+    // USING MONGOOSE
+    // const query = await Tour.find()
+    //   .where('duration')
+    //   .equals(5)
+    //   .where('difficulty')
+    //   .equals('easy');
+
+    // SENDING RESPONSE
     res.status(200).json({
       status: 'success',
       time: req.requestTime,
