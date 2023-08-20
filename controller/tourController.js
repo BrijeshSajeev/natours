@@ -82,11 +82,11 @@ exports.deleteTour = async (req, res) => {
   try {
     // const tour = await Tour.deleteOne({ _id: req.params.id });
     await Tour.findByIdAndDelete(req.params.id);
-    res.status(500).json({
-      status: 'sucess',
+    res.status(204).json({
+      // status: 'sucess',
     });
   } catch (err) {
-    res.status(400).json({
+    res.status(404).json({
       status: 'fail',
       message: 'bad Request',
     });
