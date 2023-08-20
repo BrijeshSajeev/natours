@@ -11,7 +11,7 @@ app.use(express.json());
 
 app.use((req, res, next) => {
   req.requestTime = new Date().toISOString();
-  console.log('Hello from the middleware👋');
+  // console.log('Hello from the middleware👋');
   next();
 });
 // // Get request

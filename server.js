@@ -20,24 +20,12 @@ mongoose
     console.log('Connection Successfull');
   });
 
-const tourSchema = mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Err Str : tour must have name'],
-    unique: true,
-  },
-  price: {
-    type: Number,
-    required: [true, 'Err Str : tour must have price'],
-  },
-  rating: {
-    type: Number,
-    default: 4.5,
-  },
+const port = 3000;
+app.listen(port, () => {
+  console.log('System is running');
 });
 
-const Tour = mongoose.model('Tour', tourSchema);
-
+////////////////////////////////////////////////////
 // const testTour = new Tour({
 //   name: 'The Snow Mountain',
 //   price: 230,
@@ -48,8 +36,3 @@ const Tour = mongoose.model('Tour', tourSchema);
 //   .save()
 //   .then((doc) => console.log(doc))
 //   .catch((err) => console.log('Error 🔥', err));
-
-const port = 3000;
-app.listen(port, () => {
-  console.log('System is running');
-});
