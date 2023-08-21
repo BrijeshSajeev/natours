@@ -22,55 +22,114 @@ exports.createTour = async (req, res) => {
     });
   }
 };
+exports.aliasToTour = (req, res, next) => {
+  req.query.limit = 5;
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,summary,ratingsAverage';
+  next();
+};
+class APIFeatures {
+  constructor(query, queryString) {
+    this.query = query;
+    this.queryString = queryString;
+  }
+
+  filter() {
+    const queryObj = { ...this.queryString };
+    const excludeEle = ['page', 'sort', 'fields', 'limit'];
+    excludeEle.forEach((el) => delete queryObj[el]);
+    // Advance Filtering
+    // { duration: { gte: '5' }, difficulty: 'easy' }
+    let queryStr = JSON.stringify(queryObj);
+    queryStr = queryStr.replace(/\b(gte|gt|lt|lte)\b/g, (match) => `$${match}`);
+    this.query = this.query.find(JSON.parse(queryStr));
+    return this;
+  }
+
+  sort() {
+    if (this.queryString.sort) {
+      const sortStr = this.queryString.sort.split(',').join(' ');
+      this.query = this.query.sort(sortStr);
+      // sort('price ratingAverage')
+    } else {
+      // Default
+      this.query = this.query.sort('createdAt');
+    }
+    return this;
+  }
+
+  limitFilelds() {
+    if (this.queryString.fields) {
+      const fieldStr = this.queryString.fields.split(',').join(' ');
+      this.query = this.query.select(fieldStr);
+    } else {
+      this.query = this.query.select('-__v');
+    }
+    return this;
+  }
+
+  paginate() {
+    const page = this.queryString.page * 1 || 1;
+    const limit = this.queryString.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    this.query = this.query.skip(skip).limit(limit);
+
+    return this;
+  }
+}
 exports.getAllTours = async (req, res) => {
   try {
     // BUILD THE QUERY
     // Filtering
-    const queryObj = { ...req.query };
-    const excludeEle = ['page', 'sort', 'fields', 'limit'];
-    // console.log(req.query);
-    excludeEle.forEach((el) => delete queryObj[el]);
-    // Advance Filtering
-    // { duration: { gte: '5' }, difficulty: 'easy' }
-    let queryString = JSON.stringify(queryObj);
-    queryString = queryString.replace(
-      /\b(gte|gt|lt|lte)\b/g,
-      (match) => `$${match}`,
-    );
+    // const queryObj = { ...req.query };
+    // const excludeEle = ['page', 'sort', 'fields', 'limit'];
+    // // console.log(req.query);
+    // excludeEle.forEach((el) => delete queryObj[el]);
+    // // Advance Filtering
+    // // { duration: { gte: '5' }, difficulty: 'easy' }
+    // let queryString = JSON.stringify(queryObj);
+    // queryString = queryString.replace(
+    //   /\b(gte|gt|lt|lte)\b/g,
+    //   (match) => `$${match}`,
+    // );
 
-    let query = Tour.find(JSON.parse(queryString));
+    // let query = Tour.find(JSON.parse(queryString));
 
     // SORTING
-    if (req.query.sort) {
-      const sortStr = req.query.sort.split(',').join(' ');
-      query = query.sort(sortStr);
-      // sort('price ratingAverage')
-    } else {
-      // Default
-      query = query.sort('createdAt');
-    }
+    // if (req.query.sort) {
+    //   const sortStr = req.query.sort.split(',').join(' ');
+    //   query = query.sort(sortStr);
+    //   // sort('price ratingAverage')
+    // } else {
+    //   // Default
+    //   query = query.sort('createdAt');
+    // }
 
     // FIELD LIMITING
-    if (req.query.fields) {
-      const fieldStr = req.query.fields.split(',').join(' ');
-      query = query.select(fieldStr);
-    } else {
-      query = query.select('-__v');
-    }
+    // if (req.query.fields) {
+    //   const fieldStr = req.query.fields.split(',').join(' ');
+    //   query = query.select(fieldStr);
+    // } else {
+    //   query = query.select('-__v');
+    // }
 
     // PAGINATION
-    const page = req.query.page * 1 || 1;
-    const limit = req.query.limit * 1 || 100;
-    const skip = (page - 1) * limit;
-    query = query.skip(skip).limit(limit);
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit;
+    // query = query.skip(skip).limit(limit);
 
-    if (req.query.page) {
-      const noOfTours = await Tour.countDocuments();
-      if (skip >= noOfTours) throw new Error("This page doesn't exists");
-    }
+    // if (req.query.page) {
+    //   const noOfTours = await Tour.countDocuments();
+    //   if (skip >= noOfTours) throw new Error("This page doesn't exists");
+    // }
     // EXECUTE THE QUERY
-
-    const tours = await query;
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFilelds()
+      .paginate();
+    const tours = await features.query;
 
     // USING MONGOOSE
     // const query = await Tour.find()
