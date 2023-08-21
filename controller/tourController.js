@@ -42,7 +42,7 @@ exports.getAllTours = async (req, res) => {
 
     // SORTING
     if (req.query.sort) {
-      const sortStr = req.query.sort.replace(',', ' ');
+      const sortStr = req.query.sort.split(',').join(' ');
       query = query.sort(sortStr);
       // sort('price ratingAverage')
     } else {
@@ -50,6 +50,24 @@ exports.getAllTours = async (req, res) => {
       query = query.sort('createdAt');
     }
 
+    // FIELD LIMITING
+    if (req.query.fields) {
+      const fieldStr = req.query.fields.split(',').join(' ');
+      query = query.select(fieldStr);
+    } else {
+      query = query.select('-__v');
+    }
+
+    // PAGINATION
+    const page = req.query.page * 1 || 1;
+    const limit = req.query.limit * 1 || 100;
+    const skip = (page - 1) * limit;
+    query = query.skip(skip).limit(limit);
+
+    if (req.query.page) {
+      const noOfTours = await Tour.countDocuments();
+      if (skip >= noOfTours) throw new Error("This page doesn't exists");
+    }
     // EXECUTE THE QUERY
 
     const tours = await query;
@@ -73,7 +91,7 @@ exports.getAllTours = async (req, res) => {
   } catch (err) {
     res.status(400).json({
       status: 'fail',
-      message: 'bad Request',
+      message: err,
     });
   }
 };
