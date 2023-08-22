@@ -49,7 +49,7 @@ const tourSchema = mongoose.Schema({
     default: Date.now(),
     select: false, // this will not show to the client
   },
-  startDate: [Date],
+  startDates: [Date],
 });
 
 const Tour = mongoose.model('Tour', tourSchema);
