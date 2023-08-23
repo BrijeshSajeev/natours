@@ -19,7 +19,7 @@ exports.createTour = async (req, res) => {
     // console.log('Error 🔥', err);
     return res.status(400).json({
       status: 'fail',
-      message: 'error',
+      message: err,
     });
   }
 };
@@ -94,7 +94,7 @@ exports.updateTour = async (req, res) => {
   } catch (err) {
     res.status(404).json({
       status: 'error',
-      message: 'bad request',
+      message: err,
     });
   }
 };
