@@ -12,6 +12,7 @@
     "no-param-reassign": "off",
     "no-return-await": "off",
     "prefer-object-spread": "off",
+    "import/no-extraneous-dependencies": "off",
     "no-underscore-dangle": "off",
     "class-methods-use-this": "off",
     "prefer-destructuring": ["error", { "object": true, "array": false }],
