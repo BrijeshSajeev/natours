@@ -1,197 +1,144 @@
+/* eslint-disable arrow-body-style */
 const Tour = require('../model/tourModel');
+const catchErrorAsync = require('../utils/catchAsync');
 const APIFeatures = require('../utils/apiFeatures');
 
-exports.createTour = async (req, res) => {
-  // const tour = new Tour({});
-  // tour.save();
-
-  try {
-    const newTour = await Tour.create(req.body);
-    // console.log(newTour);
-
-    res.status(201).json({
-      status: 'success',
-      data: {
-        tour: newTour,
-      },
-    });
-  } catch (err) {
-    // console.log('Error 🔥', err);
-    return res.status(400).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+exports.createTour = catchErrorAsync(async (req, res) => {
+  const newTour = await Tour.create(req.body);
+  res.status(201).json({
+    status: 'success',
+    data: {
+      tour: newTour,
+    },
+  });
+});
 exports.aliasToTour = (req, res, next) => {
   req.query.limit = 5;
   req.query.sort = '-ratingsAverage,price';
   req.query.fields = 'name,price,summary,ratingsAverage';
   next();
 };
-exports.getAllTours = async (req, res) => {
-  try {
-    // EXECUTE THE QUERY
-    const features = new APIFeatures(Tour.find(), req.query)
-      .filter()
-      .sort()
-      .limitFilelds()
-      .paginate();
-    const tours = await features.query;
 
-    // USING MONGOOSE
-    // const query = await Tour.find()
-    //   .where('duration')
-    //   .equals(5)
-    //   .where('difficulty')
-    //   .equals('easy');
+exports.getAllTours = catchErrorAsync(async (req, res) => {
+  // EXECUTE THE QUERY
+  const features = new APIFeatures(Tour.find(), req.query)
+    .filter()
+    .sort()
+    .limitFilelds()
+    .paginate();
+  const tours = await features.query;
 
-    // SENDING RESPONSE
-    res.status(200).json({
-      status: 'success',
-      time: req.requestTime,
-      results: tours.length,
-      data: {
-        tours,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: err,
-    });
-  }
-};
+  // USING MONGOOSE
+  // const query = await Tour.find()
+  //   .where('duration')
+  //   .equals(5)
+  //   .where('difficulty')
+  //   .equals('easy');
 
-exports.getTour = async (req, res) => {
-  try {
-    const tour = await Tour.findById(req.params.id);
+  // SENDING RESPONSE
+  res.status(200).json({
+    status: 'success',
+    time: req.requestTime,
+    results: tours.length,
+    data: {
+      tours,
+    },
+  });
+});
 
-    res.status(200).json({
-      status: 'success',
-      data: {
-        tour,
-      },
-    });
-  } catch (err) {
-    res.status(400).json({
-      status: 'fail',
-      message: 'bad Request',
-    });
-  }
-};
+exports.getTour = catchErrorAsync(async (req, res) => {
+  const tour = await Tour.findById(req.params.id);
 
-exports.updateTour = async (req, res) => {
-  try {
-    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-      runValidators: true,
-    });
-    res.status(200).json({
-      status: 'success',
+  res.status(200).json({
+    status: 'success',
+    data: {
       tour,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'error',
-      message: err,
-    });
-  }
-};
+    },
+  });
+});
 
-exports.deleteTour = async (req, res) => {
-  try {
-    // const tour = await Tour.deleteOne({ _id: req.params.id });
-    await Tour.findByIdAndDelete(req.params.id);
-    res.status(204).json({
-      // status: 'sucess',
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'bad Request',
-    });
-  }
-};
+exports.updateTour = catchErrorAsync(async (req, res) => {
+  const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+    new: true,
+    runValidators: true,
+  });
+  res.status(200).json({
+    status: 'success',
+    tour,
+  });
+});
 
-exports.getTourStats = async (req, res) => {
-  try {
-    const stats = await Tour.aggregate([
-      {
-        $match: { ratingsAverage: { $gte: 4.5 } },
+exports.deleteTour = catchErrorAsync(async (req, res) => {
+  // const tour = await Tour.deleteOne({ _id: req.params.id });
+  await Tour.findByIdAndDelete(req.params.id);
+  res.status(204).json({
+    // status: 'sucess',
+  });
+});
+
+exports.getTourStats = catchErrorAsync(async (req, res) => {
+  const stats = await Tour.aggregate([
+    {
+      $match: { ratingsAverage: { $gte: 4.5 } },
+    },
+    {
+      $group: {
+        _id: '$difficulty',
+        // _id: { $toUpper: '$difficulty' },
+        numTours: { $sum: 1 },
+        numRatings: { $sum: '$ratingsAverage' },
+        avgRating: { $avg: '$ratingsAverage' },
+        avgPrice: { $avg: '$price' },
+        minPrice: { $min: '$price' },
+        maxPrice: { $max: '$price' },
       },
-      {
-        $group: {
-          _id: '$difficulty',
-          // _id: { $toUpper: '$difficulty' },
-          numTours: { $sum: 1 },
-          numRatings: { $sum: '$ratingsAverage' },
-          avgRating: { $avg: '$ratingsAverage' },
-          avgPrice: { $avg: '$price' },
-          minPrice: { $min: '$price' },
-          maxPrice: { $max: '$price' },
+    },
+    {
+      $sort: { avgPrice: -1 },
+    },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: stats,
+  });
+});
+
+exports.getMonthlyplan = catchErrorAsync(async (req, res) => {
+  const year = req.params.year * 1;
+
+  const plan = await Tour.aggregate([
+    {
+      $unwind: '$startDates',
+    },
+    {
+      $match: {
+        startDates: {
+          $gte: new Date(`${year}-01-01`),
+          $lte: new Date(`${year}-12-31`),
         },
       },
-      {
-        $sort: { avgPrice: -1 },
+    },
+    {
+      $group: {
+        _id: { $month: '$startDates' },
+        numTours: { $sum: 1 },
+        tours: { $push: '$name' },
       },
-    ]);
-    res.status(200).json({
-      status: 'success',
-      data: stats,
-    });
-  } catch (err) {
-    // console.log(err);
-    res.status(404).json({
-      status: 'fail',
-      message: 'bad Request..',
-    });
-  }
-};
-
-exports.getMonthlyplan = async (req, res) => {
-  try {
-    const year = req.params.year * 1;
-
-    const plan = await Tour.aggregate([
-      {
-        $unwind: '$startDates',
+    },
+    {
+      $addFields: { month: '$_id' },
+    },
+    {
+      $project: {
+        _id: 0,
       },
-      {
-        $match: {
-          startDates: {
-            $gte: new Date(`${year}-01-01`),
-            $lte: new Date(`${year}-12-31`),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: { $month: '$startDates' },
-          numTours: { $sum: 1 },
-          tours: { $push: '$name' },
-        },
-      },
-      {
-        $addFields: { month: '$_id' },
-      },
-      {
-        $project: {
-          _id: 0,
-        },
-      },
-    ]);
-    res.status(200).json({
-      status: 'success',
-      data: plan,
-    });
-  } catch (err) {
-    res.status(404).json({
-      status: 'fail',
-      message: 'bad Request..',
-    });
-  }
-};
+    },
+  ]);
+  res.status(200).json({
+    status: 'success',
+    data: plan,
+  });
+});
 //////////////////////////////////////////
 /*
 // const tours = JSON.parse(
@@ -217,5 +164,26 @@ exports.checkBody = (req, res, next) => {
     });
   }
 };
+
+
+exports.createTour = (async (req, res) => {
+  // const tour = new Tour({});
+  // tour.save();
+  // try {
+  // const newTour = await Tour.create(req.body);
+  // res.status(201).json({
+  //   status: 'success',
+  //   data: {
+  //     tour: newTour,
+  //   },
+  });
+  // } catch (err) {
+  //   // console.log('Error 🔥', err);
+  //   return res.status(400).json({
+  //     status: 'fail',
+  //     message: err,
+  //   });
+  // }
+});
 
 */
