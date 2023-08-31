@@ -34,5 +34,12 @@ app.use((req, res, next) => {
 app.use('/api/v1/users', routeUser);
 app.use('/api/v1/tours', routeTour);
 
+// Middle ware for worng Urls
+app.all('*', (req, res, next) => {
+  res.status(404).json({
+    status: 'fail',
+    message: `can't access this ${req.originalUrl}`,
+  });
+});
 module.exports = app;
 /////////////////////////////////
