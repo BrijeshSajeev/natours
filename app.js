@@ -36,10 +36,25 @@ app.use('/api/v1/tours', routeTour);
 
 // Middle ware for worng Urls
 app.all('*', (req, res, next) => {
-  res.status(404).json({
-    status: 'fail',
-    message: `can't access this ${req.originalUrl}`,
+  // res.status(404).json({
+  //   status: 'fail',
+  //   message: `can't access this ${req.originalUrl}`,
+  // });
+  const err = new Error(`can't access this ${req.originalUrl}`);
+  err.status = 'fail';
+  err.statusCode = 404;
+  next(err);
+});
+
+app.use((err, req, res, next) => {
+  err.status = err.status || 'fail';
+  err.statusCode = err.statusCode || 500;
+
+  res.status(err.statusCode).json({
+    status: err.status,
+    message: err.message,
   });
 });
+
 module.exports = app;
 /////////////////////////////////
