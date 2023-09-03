@@ -38,15 +38,18 @@ const userSchema = mongoose.Schema({
     },
   },
 });
-const User = mongoose.model('User', userSchema);
 
 userSchema.pre('save', async function (next) {
+  // only run when the password is modified or saved or created
   if (!this.isModified('password')) return;
 
+  // this encypr the the exist pass and return it
   this.password = await bcrypt.hash(this.password, 12);
+
   // After the validation was successfull we no longer need this
   this.passwordConfirm = undefined;
   next();
 });
+const User = mongoose.model('User', userSchema);
 
 module.exports = User;
