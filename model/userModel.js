@@ -27,7 +27,7 @@ const userSchema = mongoose.Schema({
   },
   passwordConfirm: {
     type: String,
-    // required: [true, 'please confirm your password'],
+    required: [true, 'please confirm your password'],
   },
 });
 const User = mongoose.model('User', userSchema);
