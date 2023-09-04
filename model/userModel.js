@@ -16,6 +16,8 @@ const userSchema = mongoose.Schema({
   },
   role: {
     type: String,
+    enum: ['user', 'guide', 'lead-guide', 'admin'],
+    default: 'user',
   },
   active: Boolean,
   photo: {
@@ -60,7 +62,7 @@ userSchema.methods.correctPassword = async function (
   return await bcrypt.compare(candidatePassword, userPassword);
 };
 
-userSchema.methods.changePasswordTime = async function (JWTTimeStamp) {
+userSchema.methods.changePasswordTime = function (JWTTimeStamp) {
   if (this.passwordChangeTime) {
     const changeTimeStamp = parseInt(
       this.passwordChangeTime.getTime() / 1000,

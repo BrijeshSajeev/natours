@@ -15,6 +15,7 @@ exports.signup = catchAsync(async (req, res, next) => {
   // const user = await User.create(req.body);
   const newUser = await User.create({
     name: req.body.name,
+    role: req.body.role,
     email: req.body.email,
     password: req.body.password,
     passwordConfirm: req.body.passwordConfirm,
@@ -71,18 +72,28 @@ exports.protect = catchAsync(async (req, res, next) => {
   const decoded = await verification(token, process.env.JWT_SECRET);
 
   // 3 Check if user still exists
-  const freshUser = await User.findById(decoded.id);
-  if (!freshUser) {
+  const currentUser = await User.findById(decoded.id);
+  if (!currentUser) {
     return next(new AppError('User Not found'), 401);
   }
 
   // 4 check if user changed the password after the token is issued
-  if (freshUser.changePasswordTime(decoded.iat)) {
+
+  if (currentUser.changePasswordTime(decoded.iat)) {
     return next(
-      new AppError('user recently changed password, Please login again!'),
+      new AppError('user recently changed password, Please login again!', 401),
     );
   }
   // Grant Access
-  req.user = freshUser;
+  req.user = currentUser;
   next();
 });
+
+exports.restrictTo =
+  (...roles) =>
+  (req, res, next) => {
+    if (!roles.includes(req.user.role)) {
+      return next(new AppError('Permission denied!', 403));
+    }
+    next();
+  };
