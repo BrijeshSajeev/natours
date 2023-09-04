@@ -28,6 +28,9 @@ const handleValidationDB = (err) => {
   return error;
 };
 
+// JWT ERRORS
+const handleJWTError = (err) => new AppError('Invalid Token', 401);
+
 const errDevMsg = (err, res) => {
   res.status(err.statusCode).json({
     status: err.status,
@@ -60,11 +63,14 @@ module.exports = (err, req, res, next) => {
     errDevMsg(err, res);
   } else if (process.env.NODE_ENV === 'production') {
     let error = { ...err };
+
     if (err.name === 'CastError') error = handleCastErrorDB(error);
 
     if (err.code === 11000) error = handleDuplicateValDB(error);
 
     if (err.name === 'ValidationError') error = handleValidationDB(error);
+
+    if (err.name === 'JsonWebTokenError') error = handleJWTError(error);
     errProdMsg(error, res);
   }
 };

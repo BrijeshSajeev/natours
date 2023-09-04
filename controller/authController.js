@@ -1,3 +1,4 @@
+const { promisify } = require('util');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const AppError = require('../utils/appError');
@@ -50,4 +51,28 @@ exports.login = catchAsync(async (req, res, next) => {
     status: 'success',
     token,
   });
+});
+
+exports.protect = catchAsync(async (req, res, next) => {
+  // 1 Getting token and check it
+  let token;
+
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith('Bearer')
+  ) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+  if (!token) {
+    return next(new AppError('you are not logged in!, Please Login'));
+  }
+  // 2 verification token
+  const verification = promisify(jwt.verify);
+  const decoded = await verification(token, process.env.JWT_SECRET);
+  console.log(decoded);
+
+  // 3 Check if user still exists
+  // 4 check if user changed the password after the token is issued
+
+  next();
 });
