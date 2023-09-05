@@ -83,7 +83,7 @@ userSchema.methods.createPasswordResetToken = function () {
     .update(resetToken)
     .digest('hex');
   this.passwordResetTime = Date.now() + 10 * 60 * 1000;
-  console.log(resetToken, this.passwordResetToken, this.passwordResetTime);
+
   return resetToken;
 };
 
