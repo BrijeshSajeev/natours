@@ -46,11 +46,18 @@ const userSchema = mongoose.Schema({
   passwordResetExpires: Date,
 });
 
+userSchema.pre('save', function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangeTime = Date.now() - 1000;
+  next();
+});
+
 userSchema.pre('save', async function (next) {
   // only run when the password is modified or saved or created
-  if (!this.isModified('password')) return;
+  if (!this.isModified('password')) return next();
 
-  // this encypr the the exist pass and return it
+  // this encypt the the exist pass and return it
   this.password = await bcrypt.hash(this.password, 12);
 
   // After the validation was successfull we no longer need this
