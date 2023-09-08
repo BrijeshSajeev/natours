@@ -17,6 +17,19 @@ const signToken = (id) =>
 const createSendToken = (user, statusCode, res) => {
   const token = signToken(user._id);
 
+  const cookieOption = {
+    expires: new Date( // this will delete the cookie after the expiration date
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 100,
+    ),
+    // secure: true, // the cookie can only be sent on an encrypted connection (https)
+    httpOnly: true, // it will make the cookie can't to accessed or modified in any way by the browser
+  };
+
+  if (process.env.NODE_ENV === 'production') cookieOption.secure = true;
+
+  res.cookie('jwt', token, cookieOption);
+
+  user.password = undefined;
   res.status(statusCode).json({
     status: 'success',
     token,
