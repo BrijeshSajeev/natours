@@ -20,7 +20,7 @@ const userSchema = mongoose.Schema({
     enum: ['user', 'guide', 'lead-guide', 'admin'],
     default: 'user',
   },
-  active: Boolean,
+
   photo: {
     type: String,
   },
@@ -41,9 +41,17 @@ const userSchema = mongoose.Schema({
       message: 'Passwords are not the same',
     },
   },
-  passwordChangeTime: Date,
+  passwordChangeTime: {
+    type: Date,
+    // select: false,
+  },
   passwordResetToken: String,
   passwordResetExpires: Date,
+  active: {
+    type: Boolean,
+    default: true,
+    select: false,
+  },
 });
 
 userSchema.pre('save', function (next) {
@@ -62,6 +70,11 @@ userSchema.pre('save', async function (next) {
 
   // After the validation was successfull we no longer need this
   this.passwordConfirm = undefined;
+  next();
+});
+
+userSchema.pre(/^find/, function (next) {
+  this.find({ active: { $ne: false } });
   next();
 });
 
