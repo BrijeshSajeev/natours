@@ -1,5 +1,10 @@
 // Express
 const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const mongoSanitize = require('express-mongo-sanitize');
+const xss = require('xss-clean');
+const hpp = require('hpp');
 const AppError = require('./utils/appError');
 const globalErrorController = require('./controller/errorController');
 const routeUser = require('./routes/userRoutes');
@@ -7,14 +12,34 @@ const routeTour = require('./routes/tourRoutes');
 
 const app = express();
 ////////////////////
-// Middleware
-app.use(express.json());
+//GLOBAL Middleware
+// Helmet, Set security http headers
+app.use(helmet());
 
-app.use((req, res, next) => {
-  req.requestTime = new Date().toISOString();
-  // console.log('Hello from the middleware👋');
-  next();
+//Rate Limiting from same IP
+const limitRate = rateLimit({
+  max: 100,
+  windowMs: 60 * 60 * 1000,
+  message: 'Too many requests!, try again in a hour',
 });
+
+app.use('/api', limitRate);
+
+// Body Parser, reading data from the body to the req.body
+app.use(express.json({ limit: '10kb' }));
+
+// Data Sanitization against sql-query-injection
+app.use(mongoSanitize());
+
+//Data Sanitization against XSS
+app.use(xss());
+
+// Prevent Parameter Pollution
+app.use(hpp());
+
+// Serving static files
+app.use(express.static(`${__dirname}/public`));
+
 // // Get request
 // app.get('/api/v1/tours', getAllTours);
 // Post request
