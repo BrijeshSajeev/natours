@@ -118,6 +118,15 @@ tourSchema.virtual('durationWeek').get(function () {
   return this.duration / 7;
 });
 
+// Virtual populate
+tourSchema.virtual('reviews', {
+  ref: 'Review',
+  // To connect we have to specifiy the field name which is referenced in the Review model
+  foreignField: 'tour',
+  // To connect we have to specifiy the field name which is in the current model (_id)
+  localField: '_id',
+});
+
 // DOCUMENT MIDDLEWARE : it will run before .save() or .create()methods
 tourSchema.pre('save', function (next) {
   this.slug = slugify(this.name, { lower: true });
