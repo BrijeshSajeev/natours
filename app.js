@@ -9,6 +9,7 @@ const AppError = require('./utils/appError');
 const globalErrorController = require('./controller/errorController');
 const routeUser = require('./routes/userRoutes');
 const routeTour = require('./routes/tourRoutes');
+const routeReview = require('./routes/reviewRoutes');
 
 const app = express();
 ////////////////////
@@ -40,6 +41,7 @@ app.use(hpp());
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
 
+app.use('/api/v1/reviews', routeReview);
 app.use('/api/v1/users', routeUser);
 app.use('/api/v1/tours', routeTour);
 
