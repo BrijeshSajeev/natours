@@ -80,7 +80,7 @@ const tourSchema = mongoose.Schema(
     guides: [
       {
         type: mongoose.Schema.ObjectId, // which means we expect a type of each of the elements to be a MongoDB ID
-        ref: 'Users', // referencing
+        ref: 'User', // referencing
       },
     ],
     startLocation: {
@@ -132,6 +132,13 @@ tourSchema.pre('save', function (next) {
 // Query MW
 tourSchema.pre(/^find/, function (next) {
   this.find({ secretTour: { $ne: true } });
+  next();
+});
+tourSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: 'guides',
+    select: '-__v -passwordChangeTime',
+  });
   next();
 });
 
