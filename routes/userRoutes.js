@@ -17,10 +17,8 @@ router.patch(
 router.patch('/updateMe', authController.protect, userController.updateMe);
 router.delete('/deleteMe', authController.protect, userController.deleteUser);
 
-// router
-// .route('/')
-// .get(userController.getAllUsers)
-// .post(userController.createUser);
+router.route('/').get(userController.getAllUsers);
+
 // router
 //   .route('/:id')
 //   .get(userController.getUser)

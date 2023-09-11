@@ -64,7 +64,7 @@ const tourSchema = mongoose.Schema(
     },
     imageCover: {
       type: String,
-      required: [true, 'Err Str : tour must have image'],
+      // required: [true, 'Err Str : tour must have image'],
     },
     images: [String],
     secretTour: {
@@ -77,6 +77,12 @@ const tourSchema = mongoose.Schema(
       select: false, // this will not show to the client
     },
     startDates: [Date],
+    guides: [
+      {
+        type: mongoose.Schema.ObjectId, // which means we expect a type of each of the elements to be a MongoDB ID
+        ref: 'Users', // referencing
+      },
+    ],
     startLocation: {
       // GeoJSON
       type: {
