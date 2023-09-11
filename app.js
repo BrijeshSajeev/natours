@@ -40,6 +40,18 @@ app.use(hpp());
 // Serving static files
 app.use(express.static(`${__dirname}/public`));
 
+app.use('/api/v1/users', routeUser);
+app.use('/api/v1/tours', routeTour);
+
+// Middle ware for worng Urls
+app.all('*', (req, res, next) => {
+  next(new AppError(`can't access this ${req.originalUrl}`, 404));
+});
+
+app.use(globalErrorController);
+
+module.exports = app;
+/////////////////////////////////
 // // Get request
 // app.get('/api/v1/tours', getAllTours);
 // Post request
@@ -57,15 +69,3 @@ app.use(express.static(`${__dirname}/public`));
 //   .patch(updateTour);
 
 // app.route('/api/v1/users').get(getAllUsers).post(createUser);
-app.use('/api/v1/users', routeUser);
-app.use('/api/v1/tours', routeTour);
-
-// Middle ware for worng Urls
-app.all('*', (req, res, next) => {
-  next(new AppError(`can't access this ${req.originalUrl}`, 404));
-});
-
-app.use(globalErrorController);
-
-module.exports = app;
-/////////////////////////////////
