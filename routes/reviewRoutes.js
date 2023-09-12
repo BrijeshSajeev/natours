@@ -3,12 +3,11 @@ const ReviewController = require('../controller/reviewController');
 const AuthController = require('../controller/authController');
 
 const router = express.Router({ mergeParams: true });
-
+router.use(AuthController.protect);
 router
   .route('/')
-  .get(AuthController.protect, ReviewController.getAllReview)
+  .get(ReviewController.getAllReview)
   .post(
-    AuthController.protect,
     AuthController.restrictTo('user', 'admin'),
     ReviewController.setUserTourIds,
     ReviewController.createReview,
@@ -17,7 +16,13 @@ router
 router
   .route('/:id')
   .get(ReviewController.getReview)
-  .delete(ReviewController.deleteReview)
-  .patch(ReviewController.updateReview);
+  .delete(
+    AuthController.restrictTo('user', 'admin'),
+    ReviewController.deleteReview,
+  )
+  .patch(
+    AuthController.restrictTo('user', 'admin'),
+    ReviewController.updateReview,
+  );
 
 module.exports = router;
