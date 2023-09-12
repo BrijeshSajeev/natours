@@ -19,8 +19,10 @@ router.delete('/deleteMe', authController.protect, userController.deleteMe);
 
 router.route('/').get(userController.getAllUsers);
 
-router.route('/:id').delete(userController.deleteUser);
-//   .get(userController.getUser)
-//   .patch(userController.updateUser);
+router
+  .route('/:id')
+  .delete(userController.deleteUser)
+  .patch(userController.updateUser)
+  .get(userController.getUser);
 
 module.exports = router;
