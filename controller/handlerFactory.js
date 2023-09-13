@@ -68,8 +68,8 @@ exports.getAll = (Model) =>
       .sort()
       .limitFilelds()
       .paginate();
-    const tours = await features.query.explain();
-    // const tours = await features.query;
+    // const tours = await features.query.explain();
+    const tours = await features.query;
 
     // USING MONGOOSE
     // const query = await Tour.find()
