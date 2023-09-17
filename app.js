@@ -1,4 +1,5 @@
 // Express
+const path = require('path');
 const express = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
@@ -14,6 +15,11 @@ const routeReview = require('./routes/reviewRoutes');
 const app = express();
 ////////////////////
 //GLOBAL Middleware
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+// Serving static files
+app.use(express.static(path.join(__dirname, 'public')));
 // Helmet, Set security http headers
 app.use(helmet());
 
@@ -38,9 +44,13 @@ app.use(xss());
 // Prevent Parameter Pollution
 app.use(hpp());
 
-// Serving static files
-app.use(express.static(`${__dirname}/public`));
-
+// Routes
+app.get('/', (req, res) => {
+  res.status(200).render('base', {
+    tour: ' The Forest Hiker',
+    user: 'Brijesh',
+  });
+});
 app.use('/api/v1/reviews', routeReview);
 app.use('/api/v1/users', routeUser);
 app.use('/api/v1/tours', routeTour);
