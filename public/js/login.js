@@ -1,30 +1,43 @@
 /* eslint-disable */
 
-const login = async (email, password) => {
+import axios from 'axios';
+import { showAlert } from './alert';
+
+exports.login = async (email, password) => {
   console.log(email, password);
-  const data = {
-    email,
-    password,
-  };
 
   try {
-    url = `http://localhost:3000/api/v1/users/login`;
-    const response = await axios({
+    const res = await axios({
       method: 'POST',
-      url,
-      data,
+      url: '/api/v1/users/login',
+      data: {
+        email,
+        password,
+      },
     });
-    console.log(response);
-    // const responseData = await response.json();
-    // console.log(responseData);
+    // console.log(response);
+    if (res.data.status === 'success') {
+      showAlert('success', 'Logged in successfully');
+      window.setTimeout(() => {
+        location.assign('/');
+      }, 500);
+    }
   } catch (err) {
-    console.log(err);
+    showAlert('error', err.response.data.message);
   }
 };
 
-document.querySelector('.form').addEventListener('submit', (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email').value;
-  const password = document.getElementById('password').value;
-  login(email, password);
-});
+export const logout = async () => {
+  try {
+    const res = await axios({
+      method: 'GET',
+      url: '/api/v1/users/logout',
+    });
+    if (res.data.status === 'success') {
+      showAlert('success', 'Logged out successfully.');
+      location.reload(true);
+    }
+  } catch (err) {
+    showAlert('error', 'Error Logging out!, Try again.');
+  }
+};
