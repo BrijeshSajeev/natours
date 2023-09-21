@@ -79,6 +79,9 @@ app.use('/api', limitRate);
 // Body Parser, reading data from the body to the req.body
 app.use(express.json({ limit: '10kb' }));
 
+// Middle ware to parse the data coming from a from(URL encoded)
+app.use(express.urlencoded({ extended: true, limit: '10kb' }));
+
 // Data Sanitization against sql-query-injection
 app.use(mongoSanitize());
 
