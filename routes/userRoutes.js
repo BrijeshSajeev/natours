@@ -16,7 +16,7 @@ router.use(authController.protect);
 router.get('/me', userController.getMe, userController.getUser);
 router.patch('/updateMyPassword', authController.updatePassword);
 
-router.patch('/updateMe', userController.updateMe);
+router.patch('/updateMe', userController.uplodePhoto, userController.updateMe);
 router.delete('/deleteMe', userController.deleteMe);
 
 // Restrict all the routes after this MW
