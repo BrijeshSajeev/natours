@@ -1,20 +1,22 @@
 const multer = require('multer');
+const sharp = require('sharp');
 
 const AppError = require('../utils/appError');
 const catchAsync = require('../utils/catchAsync');
 const User = require('../model/userModel');
 const factory = require('./handlerFactory');
 
-const multerStorage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    // cb - call back function with (err,path)
-    cb(null, 'public/img/users');
-  },
-  filename: (req, file, cb) => {
-    const extention = file.mimetype.split('/')[1];
-    cb(null, `user-${req.user.id}-${Date.now()}.${extention}`);
-  },
-});
+const multerStorage = multer.memoryStorage();
+//  multer.diskStorage({
+//   destination: (req, file, cb) => {
+//     // cb - call back function with (err,path)
+//     cb(null, 'public/img/users');
+//   },
+//   filename: (req, file, cb) => {
+//     const extention = file.mimetype.split('/')[1];
+//     cb(null, `user-${req.user.id}-${Date.now()}.${extention}`);
+//   },
+// });
 
 const multerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith('image')) {
@@ -40,6 +42,19 @@ const filterObj = (obj, ...props) => {
   });
   return newObj;
 };
+exports.resizeUserPhoto = catchAsync(async (req, res, next) => {
+  if (!req.file) return next();
+
+  req.file.filename = `user-${req.user.id}-${Date.now()}.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(500, 500)
+    .toFormat('jpeg')
+    .jpeg({ quality: 90 })
+    .toFile(`public/img/users/${req.file.filename}`);
+
+  next();
+});
 
 exports.updateMe = catchAsync(async (req, res, next) => {
   // 1 Check if the password is modified
