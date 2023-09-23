@@ -12101,7 +12101,7 @@ var updateSettings = /*#__PURE__*/function () {
           if (res.data.status === 'success') {
             (0, _alert.showAlert)('success', "".concat(type, " updated Successfully."));
             location.reload(true);
-            //   location.assign('/');
+            location.assign('/me');
           }
           _context.next = 11;
           break;
@@ -12286,12 +12286,12 @@ if (logoutBtn) {
 if (updateFrom) {
   updateFrom.addEventListener('submit', function (e) {
     e.preventDefault();
-    var email = document.getElementById('email').value;
-    var name = document.getElementById('name').value;
-    (0, _updateSettings.updateSettings)({
-      name: name,
-      email: email
-    }, 'user');
+    var form = new FormData();
+    form.append('name', document.getElementById('name').value);
+    form.append('email', document.getElementById('email').value);
+    form.append('photo', document.getElementById('photo').files[0]);
+    // console.log(form);
+    (0, _updateSettings.updateSettings)(form, 'user');
   });
 }
 if (updatePasswordFrom) {

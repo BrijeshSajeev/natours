@@ -18,7 +18,7 @@ export const updateSettings = async (data, type) => {
     if (res.data.status === 'success') {
       showAlert('success', `${type} updated Successfully.`);
       location.reload(true);
-      //   location.assign('/');
+      location.assign('/me');
     }
   } catch (error) {
     showAlert('error', error.response.data.message);
