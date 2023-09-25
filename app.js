@@ -13,6 +13,7 @@ const globalErrorController = require('./controller/errorController');
 const routeUser = require('./routes/userRoutes');
 const routeTour = require('./routes/tourRoutes');
 const routeReview = require('./routes/reviewRoutes');
+const routeBooking = require('./routes/bookingRoutes');
 const routeView = require('./routes/viewRoutes');
 
 const app = express();
@@ -103,6 +104,7 @@ app.use('/', routeView);
 app.use('/api/v1/reviews', routeReview);
 app.use('/api/v1/users', routeUser);
 app.use('/api/v1/tours', routeTour);
+app.use('/api/v1/bookings', routeBooking);
 
 // Middle ware for worng Urls
 app.all('*', (req, res, next) => {
