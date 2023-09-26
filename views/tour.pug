@@ -1,9 +1,11 @@
 extends base
 
 block append head 
-    //- script(src='https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.js')
-    //- link(href='https://api.mapbox.com/mapbox-gl-js/v0.54.0/mapbox-gl.css' rel='stylesheet')
-    
+    //- link(rel='stylesheet' href='https://unpkg.com/leaflet@1.6.0/dist/leaflet.css')
+    //- script(src='https://unpkg.com/leaflet@1.6.0/dist/leaflet.js')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css' integrity='sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=' crossorigin='')
+    script(src='https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.js' integrity='sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=' crossorigin='')
+    script(src='/js/leaflet.js' defer)
 
 mixin overviewBox(label,text,icon)
     .overview-box__detail
@@ -76,8 +78,8 @@ block content
             .picture-box
                 img.picture-box__img(src=`/img/tours/${img}`, alt= `tour.name ${i + 1}`, class=`picture-box__img--${i + 1}`)
         
-    //- section.section-map
-    //-     #map(data-locations=`${JSON.stringify(tour.locations)}`)
+    section.section-map
+        #map(data-locations=`${JSON.stringify(tour.locations)}`)
 
     section.section-reviews
         .reviews

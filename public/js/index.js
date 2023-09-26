@@ -1,20 +1,24 @@
 /* eslint-disable */
 import '@babel/polyfill';
-// import { displayMap } from './mapbox';
+import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
 // DOM Elements
-// const mapBox = document.getElementById('map');
+const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
 const logoutBtn = document.querySelector('.nav__el--logout');
 const updateFrom = document.querySelector('.form-user-data');
 const updatePasswordFrom = document.querySelector('.form-user-password');
 const btnBookTour = document.getElementById('btn-book-tour');
 
+// console.log('hello');
 // if (mapBox) {
 //   const locations = JSON.parse(mapBox.dataset.locations);
 //   displayMap(locations);
+//   // var map = L.map('map', { zoomControl: false });
+//   // console.log(map);
+//   // console.log(mapBox);
 // }
 
 if (loginForm) {

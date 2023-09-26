@@ -37,19 +37,32 @@ const scriptSrcUrls = [
   'https://cdnjs.cloudflare.com/',
   'https://*.stripe.com/',
   'https://js.stripe.com/',
+
+  'https://cdnjs.cloudflare.com',
+
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
 ];
 const styleSrcUrls = [
+  'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.3/leaflet.css',
+
   'https://api.mapbox.com/',
+  'https://unpkg.com/',
+  'https://tile.openstreetmap.org',
   'https://api.tiles.mapbox.com/',
   'https://fonts.googleapis.com/',
+  'https://cdnjs.cloudflare.com',
 ];
 const connectSrcUrls = [
+  'ws://localhost:57138/',
   'https://api.mapbox.com/',
   'https://a.tiles.mapbox.com/',
   'https://b.tiles.mapbox.com/',
   'https://events.mapbox.com/',
   'https://bundle.js:*',
-  'ws://127.0.0.1:*/',
+
+  'https://unpkg.com',
+  'https://tile.openstreetmap.org',
 ];
 const fontSrcUrls = ['fonts.googleapis.com', 'fonts.gstatic.com'];
 app.use(
