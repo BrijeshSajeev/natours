@@ -13,13 +13,10 @@ const updatePasswordFrom = document.querySelector('.form-user-password');
 const btnBookTour = document.getElementById('btn-book-tour');
 
 // console.log('hello');
-// if (mapBox) {
-//   const locations = JSON.parse(mapBox.dataset.locations);
-//   displayMap(locations);
-//   // var map = L.map('map', { zoomControl: false });
-//   // console.log(map);
-//   // console.log(mapBox);
-// }
+if (mapBox) {
+  const locations = JSON.parse(mapBox.dataset.locations);
+  displayMap(locations);
+}
 
 if (loginForm) {
   loginForm.addEventListener('submit', (e) => {

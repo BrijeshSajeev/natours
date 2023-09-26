@@ -21,7 +21,7 @@ const handleValidationDB = (err) => {
     .map((ele) => ele.message)
     .join('. ');
 
-  console.log(errors);
+  // console.log(errors);
   const message = `Invalid Field data : ${errors}`;
   const error = new AppError(message, 400);
 

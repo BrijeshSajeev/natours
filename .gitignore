@@ -3,3 +3,4 @@ logs/
 dev-data/
 .eslintrc.json/
 *.env/
+.cache/
