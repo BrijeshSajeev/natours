@@ -43,6 +43,13 @@ exports.getLoginForm = (req, res) => {
   });
 };
 
+exports.getSignupForm = (req, res) => {
+  // console.log('hello');
+  res.status(200).render('signup', {
+    title: 'Get Started',
+  });
+};
+
 exports.getAccount = (req, res) => {
   // console.log('hello');
   res.status(200).render('account', {

@@ -4,6 +4,7 @@ import { displayMap } from './mapbox';
 import { login, logout } from './login';
 import { updateSettings } from './updateSettings';
 import { bookTour } from './stripe';
+import { signup } from './signup';
 // DOM Elements
 const mapBox = document.getElementById('map');
 const loginForm = document.querySelector('.form--login');
@@ -11,11 +12,22 @@ const logoutBtn = document.querySelector('.nav__el--logout');
 const updateFrom = document.querySelector('.form-user-data');
 const updatePasswordFrom = document.querySelector('.form-user-password');
 const btnBookTour = document.getElementById('btn-book-tour');
-
+const signupForm = document.querySelector('.form--signup');
 // console.log('hello');
 if (mapBox) {
   const locations = JSON.parse(mapBox.dataset.locations);
   displayMap(locations);
+}
+
+if (signupForm) {
+  signupForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value;
+    const email = document.getElementById('email').value;
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('passwordConfirm').value;
+    signup(name, email, password, passwordConfirm);
+  });
 }
 
 if (loginForm) {
