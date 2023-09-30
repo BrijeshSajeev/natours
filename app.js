@@ -39,7 +39,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(cookieParser());
 
 // Set security HTTP headers
-app.use(helmet());
+//app.use(helmet());
 // Further HELMET configuration for Security Policy (CSP)
 const scriptSrcUrls = [
   'https://api.tiles.mapbox.com/',
@@ -85,7 +85,15 @@ app.use(
       workerSrc: ["'self'", 'blob:'],
       frameSrc: ["'self'", 'https://*.stripe.com'],
       objectSrc: [],
-      imgSrc: ["'self'", 'blob:', 'data:'],
+      imgSrc: [
+        "'self'",
+        'blob:',
+        'data:',
+        'https://cdnjs.cloudflare.com',
+        'https://c.tile.openstreetmap.org',
+        'https://a.tile.openstreetmap.org',
+        'https://b.tile.openstreetmap.org',
+      ],
       fontSrc: ["'self'", ...fontSrcUrls],
     },
   }),
