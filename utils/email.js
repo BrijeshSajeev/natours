@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 const pug = require('pug');
 const htmlToText = require('html-to-text');
-const Transport = require('nodemailer-brevo-transport');
+const Transport = require('nodemailer');
 
 module.exports = class Email {
   constructor(user, url) {
